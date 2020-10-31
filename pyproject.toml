@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "hanimetv"
+version = "1.0.1"
+description = "CLI downloader tool for hanime.tv"
+authors = ["rxqv"]
+readme = "README.md"
+repository = "https://github.com/rxqv/hanimetv"
+
+[tool.poetry.dependencies]
+python = "^3.7"
+requests = "^2.24.0"
+tqdm = "^4.51.0"
+youtube_dl = "^2020.9.20"
+
+[tool.poetry.scripts]
+htv = 'hanime_tv.cli:main'
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
