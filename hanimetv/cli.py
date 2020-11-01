@@ -1,4 +1,4 @@
-from .api import search, download, Video, get_random
+from .api import search, download, Video, get_random, parse_hanime_url, roll_search
 import argparse
 import sys
 import time
@@ -22,12 +22,6 @@ SORT_ORDER_MAP = {
     "d": "desc",
     "descending": "desc"
 }
-
-def parse_hanime_url(url):
-    if "hanime.tv" in url:
-        return url.split("/hentai/")[1]
-    else:
-        return None
 
 def verbose_download(video, res=1080):
     print(f"Downloading {video.title}...")
@@ -62,12 +56,14 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("video", nargs="*", help="Video URL or search term")
     parser.add_argument("--tags", "-t", help="Tags to search for", action="store", nargs="+", default=[])
+    parser.add_argument("--broad-tag-match", help="Match videos including any tags specified by --tags", action="store_const", const="OR", default="AND")
     parser.add_argument("--blacklist", "-b", help="Blacklisted tags", action="store", nargs="+", default=[])
+    parser.add_argument("--company", "-c", help="Companies/brands to filter by", action="store", nargs="+", default=[])
     parser.add_argument("--page", "-p", help="Page # of search results", default=1, type=int)
     parser.add_argument("--sort-by", "-s", help="Sorting method for search results ([u]pload, [v]iews, [l]ikes, [r]elease, [t]itle)", default="title")
     parser.add_argument("--sort-order", "-w", help="Order of sorting ([a]scending or [d]escending)", default="ascending")
+    parser.add_argument("--roll-search", "-R", help="Roll all search pages into one long page, useful for large-volume downloads", action="store_true", default=False)
     parser.add_argument("--resolution", "-r", help="Resolution of download, default 1080", default=1080, type=int)
-    parser.add_argument("--broad-tag-match", help="Match videos including any tags specified by --tags", action="store_const", const="OR", default="AND")
     parser.add_argument("--index", "-i", help="Index of search results to download", action="store", nargs="+", type=int, default=[])
     parser.add_argument("--all", "-a", help="Download all search results in page", action="store_true", default=False)
     parser.add_argument("--url", "-u", help="Show urls of the source video, do not download", action="store_true", default=False)
@@ -87,6 +83,10 @@ def main():
             output(video, args.resolution, args.url, args.metadata)
     else:
         query = " ".join(args.video)
+        
+        if query == "ALL":
+            query = ""
+
         if query == "random":
             seed = int(time.time()*1000)
             results = get_random(seed)
@@ -111,7 +111,20 @@ def main():
                 print(f'Unknown sort order "{args.sort_order}", using ascending order')
                 sort_order = "ascending"
             
-            num_pages, results = search(query, blacklist=args.blacklist, tags=args.tags, page=args.page - 1, tags_mode=args.broad_tag_match, order_by=SORT_OPTS_MAP[sort_by], ordering=SORT_ORDER_MAP[sort_order])
+            search_kwargs = {
+                "blacklist": args.blacklist,
+                "brands": args.company,
+                "tags": args.tags,
+                "page": args.page - 1,
+                "tags_mode": args.broad_tag_match,
+                "order_by": SORT_OPTS_MAP[sort_by],
+                "ordering": SORT_ORDER_MAP[sort_order]
+            }
+            
+            if args.roll_search:
+                num_pages, results = 1, roll_search(query, **search_kwargs)
+            else:
+                num_pages, results = search(query, **search_kwargs)
         
         if len(results) > 1 and args.index == [] and not args.all:
             print(f'Found more than one match for "{query}"')

@@ -73,6 +73,12 @@ class Video:
     
     __repr__ = __str__
 
+def parse_hanime_url(url):
+    if "hanime.tv" in url:
+        return url.split("/hentai/")[1]
+    else:
+        return None
+
 def download(video, res=1080):
     true_res = list(video.at_resolution(res).keys())[0].split("-")[1]
     source = list(video.at_resolution(res).values())[0]
@@ -161,3 +167,11 @@ def search(query, blacklist=[], brands=[], order_by="title_sortable", ordering="
         results.append(SearchResult(result["slug"], result["name"]))
     
     return r["nbPages"], results
+
+def roll_search(query, blacklist=[], brands=[], order_by="title_sortable", ordering="asc", page=0, tags=[], tags_mode="AND"):
+    num_pages, results = search(query, blacklist=blacklist, brands=brands, order_by=order_by, ordering=ordering, tags=tags, tags_mode=tags_mode)
+    
+    for p in range(num_pages):
+        results += search(query, blacklist=blacklist, brands=brands, order_by=order_by, ordering=ordering, page=p, tags=tags, tags_mode=tags_mode)[1]
+    
+    return results
