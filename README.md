@@ -37,3 +37,27 @@ There are some special search terms you can use.
  - `htv random` - Random list of hentai
  - `htv new-uploads` - Shows the newest uploads
  - `htv new-releases` - Shows the newest releases
+## FAQ
+ - Can this download 1080p videos without Premium?
+
+Yes. It queries the backend directly to get 1080p videos without needing an account.
+ - How do I download all videos matching a filter?
+
+`htv ALL -R -a <FILTER>` will do this.
+Some examples:
+
+Download all videos from a brand:
+
+`htv ALL -R -a -c "<BRAND>"`
+
+Download all videos matching a particular tag: 
+
+`htv ALL -R -a -t "<TAG>"`
+ - When I search for brand or tag XYZ, it shows empty search results
+ 
+ If you are using tag, company, or blacklist filtering for search, you will need to make sure that the filters have quotes around them and are spelled and capitalized correctly.
+ 
+ Example: `htv ALL -c majin label` will show empty search results, but `htv ALL -c "Magin Label"` will show the correct results.
+- How can I send you death threats or feature requests?
+
+Send an email to rxqv@waifu.club and I probably won't read it unless you ask nicely.
