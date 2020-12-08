@@ -162,7 +162,6 @@ def search(query, blacklist=[], brands=[], order_by="title_sortable", ordering="
         }
     ).json()
     
-    r = json.loads(r)
     j = json.loads(r["hits"])
 
     for result in j:
