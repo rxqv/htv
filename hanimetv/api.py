@@ -147,7 +147,8 @@ def search(query, blacklist=[], brands=[], order_by="title_sortable", ordering="
 
     r = requests.post("https://search.htv-services.com/",
         headers = {
-                    "User-Agent": "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36"
+            "User-Agent": "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36",
+            "Content-Type": "application/json;charset=UTF-8"
         },
         json={
             "blacklist": blacklist,
@@ -160,7 +161,8 @@ def search(query, blacklist=[], brands=[], order_by="title_sortable", ordering="
             "tags_mode": tags_mode,
         }
     ).json()
-
+    
+    r = json.loads(r)
     j = json.loads(r["hits"])
 
     for result in j:
