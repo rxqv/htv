@@ -8,8 +8,7 @@ repository = "https://github.com/rxqv/htv"
 
 [tool.poetry.dependencies]
 python = "^3.6"
-requests = "^2.24.0"
-tqdm = "^4.51.0"
+requests = "*"
 youtube_dl = "*"
 
 [tool.poetry.scripts]
