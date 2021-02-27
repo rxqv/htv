@@ -23,11 +23,11 @@ SORT_ORDER_MAP = {
     "descending": "desc"
 }
 
-def verbose_download(video, res=1080):
+def verbose_download(video, res=1080, verbose=False):
     print(f"Downloading {video.title}...")
-    download(video, res)
+    download(video, res, verbose)
 
-def output(video, res=1080, url=False, metadata=False):
+def output(video, res=1080, url=False, metadata=False, verbose=False):
     if url or metadata:
         if url:
             sources = video.at_resolution(res)
@@ -50,7 +50,7 @@ def output(video, res=1080, url=False, metadata=False):
             print(f"Tags: {tags_str}")
             print(f"Description:\n{video.metadata.description}\n")
     else:
-        verbose_download(video, res)
+        verbose_download(video, res, verbose)
 
 def main():
     parser = argparse.ArgumentParser()
@@ -68,6 +68,7 @@ def main():
     parser.add_argument("--all", "-a", help="Download all search results in page", action="store_true", default=False)
     parser.add_argument("--url", "-u", help="Show urls of the source video, do not download", action="store_true", default=False)
     parser.add_argument("--metadata", "-m", help="Show metadata of the source video, do not download", action="store_true", default=False)
+    parser.add_argument("--verbose", "-v", help="Enable verbose logging for video download", action="store_true", default=False)
     args = parser.parse_args()
 
     slugs = list(map(parse_hanime_url, args.video))
@@ -137,10 +138,10 @@ def main():
             if args.index and not args.all:
                 for i in args.index:
                     if i <= len(results):
-                        output(results[i-1].video, args.resolution, args.url, args.metadata)
+                        output(results[i-1].video, args.resolution, args.url, args.metadata, args.verbose)
             elif args.all or len(results) == 1:
                 for result in results:
-                    output(result.video, args.resolution, args.url, args.metadata)
+                    output(result.video, args.resolution, args.url, args.metadata, args.verbose)
             elif len(results) == 0:
                 print(f'No results for "{query}"')
 

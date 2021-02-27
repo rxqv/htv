@@ -79,12 +79,17 @@ def parse_hanime_url(url):
     else:
         return None
 
-def download(video, res=1080):
+def download(video, res=1080, verbose=False):
     true_res = list(video.at_resolution(res).keys())[0].split("-")[1]
     source = list(video.at_resolution(res).values())[0]
     opts = {
         "outtmpl": f"{video.slug}-{true_res}p.mp4"
     }
+    
+    if not verbose:
+        print("asdasad")
+        opts["external_downloader_args"] = ["-loglevel","warning","-stats"]
+    
     with YoutubeDL(opts) as dl:
         dl.download([source])
 
