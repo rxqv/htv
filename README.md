@@ -4,7 +4,7 @@ CLI tool for downloading hentai from hanime.tv
 Install `ffmpeg` with whatever package manager you use, then run `pip install hanimetv`.
 ## CLI Usage
 ```
-usage: htv [-h] [--tags TAGS [TAGS ...]] [--broad-tag-match] [--blacklist BLACKLIST [BLACKLIST ...]] [--company COMPANY [COMPANY ...]] [--page PAGE] [--sort-by SORT_BY] [--sort-order SORT_ORDER] [--roll-search] [--resolution RESOLUTION] [--index INDEX [INDEX ...]] [--all] [--url] [--metadata] [video [video ...]]
+usage: htv [-h] [--tags TAGS [TAGS ...]] [--broad-tag-match] [--blacklist BLACKLIST [BLACKLIST ...]] [--company COMPANY [COMPANY ...]] [--page PAGE] [--sort-by SORT_BY] [--sort-order SORT_ORDER] [--roll-search] [--resolution RESOLUTION] [--index INDEX [INDEX ...]] [--all] [--url] [--metadata] [--verbose] [video ...]
 
 positional arguments:
   video                 Video URL or search term
@@ -31,6 +31,7 @@ optional arguments:
   --all, -a             Download all search results in page
   --url, -u             Show urls of the source video, do not download
   --metadata, -m        Show metadata of the source video, do not download
+  --verbose, -v         Enable verbose logging for video download
 ```
 There are some special search terms you can use.
  - `htv ALL` - Shows all results matching filters
@@ -55,9 +56,9 @@ Download all videos matching a particular tag:
 `htv ALL -R -a -t "<TAG>"`
  - When I search for brand or tag XYZ, it shows empty search results
  
- If you are using tag, company, or blacklist filtering for search, you will need to make sure that the filters have quotes around them and are spelled and capitalized correctly.
+ If you are using tag, company, or blacklist filtering for search, you will need to make sure that the filters have quotes around them and are spelled correctly.
  
- Example: `htv ALL -c majin label` will show empty search results, but `htv ALL -c "Magin Label"` will show the correct results.
+ Example: `htv ALL -c majin label` will show empty search results, but `htv ALL -c "magin label"` will show the correct results.
 - How can I send you death threats or feature requests?
 
 Send an email to rxqv@waifu.club and I probably won't read it unless you ask nicely.
