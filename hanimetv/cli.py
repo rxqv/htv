@@ -28,29 +28,32 @@ def verbose_download(video, res=1080, verbose=False):
     download(video, res, verbose)
 
 def output(video, res=1080, url=False, metadata=False, verbose=False):
-    if url or metadata:
-        if url:
-            sources = video.at_resolution(res)
+    try:
+        if url or metadata:
+            if url:
+                sources = video.at_resolution(res)
 
-            print(f"{video.title}:")
-            for i, j in sources.items():
-                server, res = tuple(i.split("-"))
-                print(f"{server}, {res}p: {j}")
+                print(f"{video.title}:")
+                for i, j in sources.items():
+                    server, res = tuple(i.split("-"))
+                    print(f"{server}, {res}p: {j}")
+                
+                print()
             
-            print()
-        
-        if metadata:
-            tags_str = ", ".join(video.metadata.tags)
-            print(f"URL: https://hanime.tv/videos/hentai/{video.slug}")
-            print(f"Brand: {video.metadata.brand}")
-            print(f"Likes: {video.metadata.likes}")
-            print(f"Dislikes: {video.metadata.dislikes}")
-            print(f"Views: {video.metadata.views}")
-            print(f"Downloads: {video.metadata.downloads}")
-            print(f"Tags: {tags_str}")
-            print(f"Description:\n{video.metadata.description}\n")
-    else:
-        verbose_download(video, res, verbose)
+            if metadata:
+                tags_str = ", ".join(video.metadata.tags)
+                print(f"URL: https://hanime.tv/videos/hentai/{video.slug}")
+                print(f"Brand: {video.metadata.brand}")
+                print(f"Likes: {video.metadata.likes}")
+                print(f"Dislikes: {video.metadata.dislikes}")
+                print(f"Views: {video.metadata.views}")
+                print(f"Downloads: {video.metadata.downloads}")
+                print(f"Tags: {tags_str}")
+                print(f"Description:\n{video.metadata.description}\n")
+        else:
+            verbose_download(video, res, verbose)
+    except Exception as e:
+        print(f"Download of {video.title} failed with error \"{e}\"")
 
 def main():
     parser = argparse.ArgumentParser()
