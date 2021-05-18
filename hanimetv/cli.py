@@ -81,7 +81,7 @@ def main():
         for slug in slugs:
             video = Video.from_slug(slug)
 
-            output(video, args.resolution, args.url, args.metadata)
+            output(video, args.resolution, args.url, args.metadata, args.verbose)
     else:
         query = " ".join(args.video)
         

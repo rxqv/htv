@@ -38,8 +38,8 @@ class Video:
         metadata["dislikes"] = json_enc["hentai_video"]["dislikes"]
         metadata["views"] = json_enc["hentai_video"]["views"]
         metadata["tags"] = list(map(lambda i: i["text"], json_enc["hentai_video"]["hentai_tags"]))
-        metadata["thumbnail"] = "https://i1.wp.com/static-assets.droidbuzz.top" + urlparse(json_enc["hentai_video"]["poster_url"]).path
-        metadata["cover"] = "https://i1.wp.com/static-assets.droidbuzz.top" + urlparse(json_enc["hentai_video"]["cover_url"]).path
+        metadata["thumbnail"] = json_enc["hentai_video"]["poster_url"]
+        metadata["cover"] = json_enc["hentai_video"]["cover_url"]
         metadata["downloads"] = json_enc["hentai_video"]["downloads"]
         metadata["monthly_rank"] = json_enc["hentai_video"]["monthly_rank"]
         metadata["description"] = re.compile(r'<[^>]+>').sub("", json_enc["hentai_video"]["description"])
@@ -87,7 +87,6 @@ def download(video, res=1080, verbose=False):
     }
     
     if not verbose:
-        print("asdasad")
         opts["external_downloader_args"] = ["-loglevel","warning","-stats"]
     
     with YoutubeDL(opts) as dl:
