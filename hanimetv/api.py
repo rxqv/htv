@@ -43,6 +43,8 @@ class Video:
         metadata["downloads"] = json_enc["hentai_video"]["downloads"]
         metadata["monthly_rank"] = json_enc["hentai_video"]["monthly_rank"]
         metadata["description"] = re.compile(r'<[^>]+>').sub("", json_enc["hentai_video"]["description"])
+        metadata["franchise_title"] = json_enc["hentai_franchise"]["title"]
+        metadata["franchise_videos"] = [vid["slug"] for vid in json_enc["hentai_franchise_hentai_videos"]]
         self.metadata = type("Metadata", (), metadata)()
     
     @staticmethod

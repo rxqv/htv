@@ -29,6 +29,7 @@ optional arguments:
   --index INDEX [INDEX ...], -i INDEX [INDEX ...]
                         Index of search results to download
   --all, -a             Download all search results in page
+  --franchise, -f       Download the video and all other videos in its franchise
   --url, -u             Show urls of the source video, do not download
   --metadata, -m        Show metadata of the source video, do not download
   --verbose, -v         Enable verbose logging for video download

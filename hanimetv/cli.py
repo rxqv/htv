@@ -27,8 +27,18 @@ def verbose_download(video, res=1080, verbose=False):
     print(f"Downloading {video.title}...")
     download(video, res, verbose)
 
-def output(video, res=1080, url=False, metadata=False, verbose=False):
+def output(video, res=1080, url=False, metadata=False, verbose=False, franchise=False):
     try:
+        if franchise:
+            if not url:
+                print(f"Downloading {video.metadata.franchise_title} franchise...")
+            
+            for slug in video.metadata.franchise_videos:
+                fran_vid = Video.from_slug(slug)
+                output(fran_vid, res, url, metadata, verbose, False)
+            
+            return
+        
         if url or metadata:
             if url:
                 sources = video.at_resolution(res)
@@ -44,10 +54,12 @@ def output(video, res=1080, url=False, metadata=False, verbose=False):
                 tags_str = ", ".join(video.metadata.tags)
                 print(f"URL: https://hanime.tv/videos/hentai/{video.slug}")
                 print(f"Brand: {video.metadata.brand}")
+                print(f"Franchise: {video.metadata.franchise_title}")
                 print(f"Likes: {video.metadata.likes}")
                 print(f"Dislikes: {video.metadata.dislikes}")
                 print(f"Views: {video.metadata.views}")
                 print(f"Downloads: {video.metadata.downloads}")
+                print(f"Monthly Rank: {video.metadata.monthly_rank}")
                 print(f"Tags: {tags_str}")
                 print(f"Description:\n{video.metadata.description}\n")
         else:
@@ -69,6 +81,7 @@ def main():
     parser.add_argument("--resolution", "-r", help="Resolution of download, default 1080", default=1080, type=int)
     parser.add_argument("--index", "-i", help="Index of search results to download", action="store", nargs="+", type=int, default=[])
     parser.add_argument("--all", "-a", help="Download all search results in page", action="store_true", default=False)
+    parser.add_argument("--franchise", "-f", help="Download the video and all other videos in its franchise", action="store_true", default=False)
     parser.add_argument("--url", "-u", help="Show urls of the source video, do not download", action="store_true", default=False)
     parser.add_argument("--metadata", "-m", help="Show metadata of the source video, do not download", action="store_true", default=False)
     parser.add_argument("--verbose", "-v", help="Enable verbose logging for video download", action="store_true", default=False)
@@ -84,7 +97,7 @@ def main():
         for slug in slugs:
             video = Video.from_slug(slug)
 
-            output(video, args.resolution, args.url, args.metadata, args.verbose)
+            output(video, args.resolution, args.url, args.metadata, args.verbose, args.franchise)
     else:
         query = " ".join(args.video)
         
@@ -138,15 +151,15 @@ def main():
             
             print("\nSpecify results to download with --index/-i, or download all results shown with --all/-a")
         else:
-            if args.index and not args.all:
+            if len(results) == 0:
+                print(f'No results for "{query}"')
+            elif args.index and not args.all:
                 for i in args.index:
                     if i <= len(results):
-                        output(results[i-1].video, args.resolution, args.url, args.metadata, args.verbose)
+                        output(results[i-1].video, args.resolution, args.url, args.metadata, args.verbose, args.franchise)
             elif args.all or len(results) == 1:
                 for result in results:
-                    output(result.video, args.resolution, args.url, args.metadata, args.verbose)
-            elif len(results) == 0:
-                print(f'No results for "{query}"')
+                    output(result.video, args.resolution, args.url, args.metadata, args.verbose, args.franchise)
 
 if __name__ == "__main__":
     main()
