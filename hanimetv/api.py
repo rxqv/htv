@@ -30,8 +30,7 @@ class Video:
             for source in server["streams"]:
                 name = server["name"]
                 res = source["height"]
-                vid = source["id"]
-                self.sources[f"{name}-{res}"] = f"https://weeb.hanime.tv/weeb-api-cache/api/v8/m3u8s/{vid}.m3u8"
+                self.sources[f"{name}-{res}"] = source["url"]
         
         metadata["brand"] = json_enc["hentai_video"]["brand"]
         metadata["likes"] = json_enc["hentai_video"]["likes"]
@@ -43,6 +42,7 @@ class Video:
         metadata["downloads"] = json_enc["hentai_video"]["downloads"]
         metadata["monthly_rank"] = json_enc["hentai_video"]["monthly_rank"]
         metadata["description"] = re.compile(r'<[^>]+>').sub("", json_enc["hentai_video"]["description"])
+        metadata["franchise_slug"] = json_enc["hentai_franchise"]["slug"]
         metadata["franchise_title"] = json_enc["hentai_franchise"]["title"]
         metadata["franchise_videos"] = [vid["slug"] for vid in json_enc["hentai_franchise_hentai_videos"]]
         self.metadata = type("Metadata", (), metadata)()

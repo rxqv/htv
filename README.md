@@ -42,7 +42,7 @@ There are some special search terms you can use.
 ## FAQ
  - Can this download 1080p videos without Premium?
 
-Yes. It queries the backend directly to get 1080p videos without needing an account.
+Not anymore. This utility used to be able to do this, but a breaking API change caused this functionality to stop working.
  - How do I download all videos matching a filter?
 
 `htv ALL -R -a <FILTER>` will do this.
