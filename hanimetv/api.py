@@ -30,7 +30,8 @@ class Video:
             for source in server["streams"]:
                 name = server["name"]
                 res = source["height"]
-                self.sources[f"{name}-{res}"] = source["url"]
+                if source["url"] != "":
+                    self.sources[f"{name}-{res}"] = source["url"]
         
         metadata["brand"] = json_enc["hentai_video"]["brand"]
         metadata["likes"] = json_enc["hentai_video"]["likes"]
