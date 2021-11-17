@@ -28,9 +28,10 @@ class Video:
         
         for server in json_enc["videos_manifest"]["servers"]:
             for source in server["streams"]:
-                name = server["name"]
-                res = source["height"]
-                self.sources[f"{name}-{res}"] = source["url"]
+                if source["url"] != "":
+                    name = server["name"]
+                    res = source["height"]
+                    self.sources[f"{name}-{res}"] = source["url"]
         
         metadata["brand"] = json_enc["hentai_video"]["brand"]
         metadata["likes"] = json_enc["hentai_video"]["likes"]
@@ -81,15 +82,21 @@ def parse_hanime_url(url):
     else:
         return None
 
-def download(video, res=1080, verbose=False):
+def download(video, res=1080, verbose=False, folder=False):
     true_res = list(video.at_resolution(res).keys())[0].split("-")[1]
     source = list(video.at_resolution(res).values())[0]
+    
+    if folder:
+        out = f"{video.metadata.franchise_slug}/{video.slug}-{true_res}p.mp4"
+    else:
+        out = f"{video.slug}-{true_res}p.mp4"
+    
     opts = {
-        "outtmpl": f"{video.slug}-{true_res}p.mp4"
+        "outtmpl": out
     }
     
     if not verbose:
-        opts["external_downloader_args"] = ["-loglevel","warning","-stats"]
+        opts["external_downloader_args"] = ["-loglevel", "warning", "-stats"]
     
     with YoutubeDL(opts) as dl:
         dl.download([source])

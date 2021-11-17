@@ -23,25 +23,24 @@ SORT_ORDER_MAP = {
     "descending": "desc"
 }
 
-def verbose_download(video, res=1080, verbose=False):
+def verbose_download(video, res=1080, verbose=False, folder=False):
     print(f"Downloading {video.title}...")
-    download(video, res, verbose)
+    download(video, res, verbose, folder)
 
-def output(video, res=1080, url=False, metadata=False, verbose=False, franchise=False):
+def output(video, args, franchise=False):
     try:
-        if franchise:
-            if not url:
+        if args.franchise and franchise:
+            if not args.url:
                 print(f"Downloading {video.metadata.franchise_title} franchise...")
             
             for slug in video.metadata.franchise_videos:
                 fran_vid = Video.from_slug(slug)
-                output(fran_vid, res, url, metadata, verbose, False)
+                output(fran_vid, args, franchise=False)
             
             return
-        
-        if url or metadata:
-            if url:
-                sources = video.at_resolution(res)
+        if args.url or args.metadata:
+            if args.url:
+                sources = video.at_resolution(args.resolution)
 
                 print(f"{video.title}:")
                 for i, j in sources.items():
@@ -49,8 +48,7 @@ def output(video, res=1080, url=False, metadata=False, verbose=False, franchise=
                     print(f"{server}, {res}p: {j}")
                 
                 print()
-            
-            if metadata:
+            if args.metadata:
                 tags_str = ", ".join(video.metadata.tags)
                 print(f"URL: https://hanime.tv/videos/hentai/{video.slug}")
                 print(f"Brand: {video.metadata.brand}")
@@ -63,7 +61,7 @@ def output(video, res=1080, url=False, metadata=False, verbose=False, franchise=
                 print(f"Tags: {tags_str}")
                 print(f"Description:\n{video.metadata.description}\n")
         else:
-            verbose_download(video, res, verbose)
+            verbose_download(video, args.resolution, args.verbose, args.folder)
     except Exception as e:
         print(f"Download of {video.title} failed with error \"{e}\"")
 
@@ -81,6 +79,7 @@ def main():
     parser.add_argument("--resolution", "-r", help="Resolution of download, default 1080", default=1080, type=int)
     parser.add_argument("--index", "-i", help="Index of search results to download", action="store", nargs="+", type=int, default=[])
     parser.add_argument("--all", "-a", help="Download all search results in page", action="store_true", default=False)
+    parser.add_argument("--folder", "-F", help="Create folders by franchise when downloading", action="store_true", default=False)
     parser.add_argument("--franchise", "-f", help="Download the video and all other videos in its franchise", action="store_true", default=False)
     parser.add_argument("--url", "-u", help="Show urls of the source video, do not download", action="store_true", default=False)
     parser.add_argument("--metadata", "-m", help="Show metadata of the source video, do not download", action="store_true", default=False)
@@ -97,7 +96,7 @@ def main():
         for slug in slugs:
             video = Video.from_slug(slug)
 
-            output(video, args.resolution, args.url, args.metadata, args.verbose, args.franchise)
+            output(video, args, args.franchise)
     else:
         query = " ".join(args.video)
         
@@ -109,8 +108,16 @@ def main():
             results = get_random(seed)
             
             print("Random:")
-            for result in results:
-                print(f"{result.title}")
+            if args.index and not args.all:
+                for i in args.index:
+                    if i <= len(results):
+                        output(results[i-1].video, args, args.franchise)
+            else:
+                for result in results:
+                    if args.all:
+                        output(result.video, args, args.franchise)
+                    else:
+                        print(f"{result.title}")
             
             exit(0)
         elif query == "new-uploads":
@@ -156,10 +163,10 @@ def main():
             elif args.index and not args.all:
                 for i in args.index:
                     if i <= len(results):
-                        output(results[i-1].video, args.resolution, args.url, args.metadata, args.verbose, args.franchise)
+                        output(results[i-1].video, args, args.franchise)
             elif args.all or len(results) == 1:
                 for result in results:
-                    output(result.video, args.resolution, args.url, args.metadata, args.verbose, args.franchise)
+                    output(result.video, args, args.franchise)
 
 if __name__ == "__main__":
     main()

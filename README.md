@@ -4,7 +4,7 @@ CLI tool for downloading hentai from hanime.tv
 Install `ffmpeg` with whatever package manager you use, then run `pip install hanimetv`.
 ## CLI Usage
 ```
-usage: htv [-h] [--tags TAGS [TAGS ...]] [--broad-tag-match] [--blacklist BLACKLIST [BLACKLIST ...]] [--company COMPANY [COMPANY ...]] [--page PAGE] [--sort-by SORT_BY] [--sort-order SORT_ORDER] [--roll-search] [--resolution RESOLUTION] [--index INDEX [INDEX ...]] [--all] [--url] [--metadata] [--verbose] [video ...]
+usage: htv [-h] [--tags TAGS [TAGS ...]] [--broad-tag-match] [--blacklist BLACKLIST [BLACKLIST ...]] [--company COMPANY [COMPANY ...]] [--page PAGE] [--sort-by SORT_BY] [--sort-order SORT_ORDER] [--roll-search] [--resolution RESOLUTION] [--index INDEX [INDEX ...]] [--all] [--folder] [--franchise] [--url] [--metadata] [--verbose] [video ...]
 
 positional arguments:
   video                 Video URL or search term
@@ -29,6 +29,7 @@ optional arguments:
   --index INDEX [INDEX ...], -i INDEX [INDEX ...]
                         Index of search results to download
   --all, -a             Download all search results in page
+  --folder, -F          Create folders by franchise when downloading
   --franchise, -f       Download the video and all other videos in its franchise
   --url, -u             Show urls of the source video, do not download
   --metadata, -m        Show metadata of the source video, do not download
