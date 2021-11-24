@@ -51,7 +51,7 @@ class Video:
     @staticmethod
     def from_slug(slug):
         r = requests.get(
-            f"https://hw.hanime.tv/api/v8/video?id={slug}",
+            f"https://hanime.tv/api/v8/video?id={slug}",
             headers = {
                 "User-Agent": "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36"
             }
