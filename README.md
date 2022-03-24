@@ -34,6 +34,8 @@ optional arguments:
   --url, -u             Show urls of the source video, do not download
   --metadata, -m        Show metadata of the source video, do not download
   --verbose, -v         Enable verbose logging for video download
+  --auth-token AUTH_TOKEN, -A AUTH_TOKEN
+                        Hanime.tv X-Session-Token to receive 1080p download-urls with a premium account
 ```
 There are some special search terms you can use.
  - `htv ALL` - Shows all results matching filters
