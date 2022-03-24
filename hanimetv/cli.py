@@ -106,7 +106,7 @@ def main():
 
         if query == "random":
             seed = int(time.time()*1000)
-            results = get_random(seed)
+            results = get_random(seed, args.auth_token)
             
             print("Random:")
             if args.index and not args.all:
