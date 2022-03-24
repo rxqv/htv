@@ -6,13 +6,14 @@ from urllib.parse import urlparse
 from youtube_dl import YoutubeDL
 
 class SearchResult:
-    def __init__(self, slug, title):
+    def __init__(self, slug, title, auth_token=None):
         self.title = title
         self.slug = slug
+        self.auth_token = auth_token
     
     @property
     def video(self):
-        return Video.from_slug(self.slug)
+        return Video.from_slug(self.slug, self.auth_token)
     
     def __str__(self):
         return f"<Result {self.slug}: {self.title}>"
@@ -49,12 +50,16 @@ class Video:
         self.metadata = type("Metadata", (), metadata)()
     
     @staticmethod
-    def from_slug(slug):
-        r = requests.get(
-            f"https://hanime.tv/api/v8/video?id={slug}",
-            headers = {
+    def from_slug(slug, auth_token=None):
+        headers = {
                 "User-Agent": "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36"
             }
+        if auth_token:
+            headers["X-Session-Token"] = auth_token
+        
+        r = requests.get(
+            f"https://hanime.tv/api/v8/video?id={slug}",
+            headers=headers
         )
         json_enc = r.json()
         return Video(json_enc)
@@ -115,7 +120,7 @@ def get_random(seed):
 
     return results
 
-def search(query, blacklist=[], brands=[], order_by="title_sortable", ordering="asc", page=0, tags=[], tags_mode="AND"):
+def search(query, blacklist=[], brands=[], order_by="title_sortable", ordering="asc", page=0, tags=[], tags_mode="AND", auth_token=None):
     """
     ```
     Args:
@@ -178,14 +183,14 @@ def search(query, blacklist=[], brands=[], order_by="title_sortable", ordering="
     j = json.loads(r["hits"])
 
     for result in j:
-        results.append(SearchResult(result["slug"], result["name"]))
+        results.append(SearchResult(result["slug"], result["name"], auth_token=auth_token))
     
     return r["nbPages"], results
 
-def roll_search(query, blacklist=[], brands=[], order_by="title_sortable", ordering="asc", page=0, tags=[], tags_mode="AND"):
-    num_pages, results = search(query, blacklist=blacklist, brands=brands, order_by=order_by, ordering=ordering, tags=tags, tags_mode=tags_mode)
+def roll_search(query, blacklist=[], brands=[], order_by="title_sortable", ordering="asc", page=0, tags=[], tags_mode="AND", auth_token=None):
+    num_pages, results = search(query, blacklist=blacklist, brands=brands, order_by=order_by, ordering=ordering, tags=tags, tags_mode=tags_mode, auth_token=auth_token)
     
     for p in range(num_pages):
-        results += search(query, blacklist=blacklist, brands=brands, order_by=order_by, ordering=ordering, page=p, tags=tags, tags_mode=tags_mode)[1]
+        results += search(query, blacklist=blacklist, brands=brands, order_by=order_by, ordering=ordering, page=p, tags=tags, tags_mode=tags_mode, auth_token=auth_token)[1]
     
     return results
