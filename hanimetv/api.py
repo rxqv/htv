@@ -106,7 +106,7 @@ def download(video, res=1080, verbose=False, folder=False):
     with YoutubeDL(opts) as dl:
         dl.download([source])
 
-def get_random(seed):
+def get_random(seed, auth_token=None):
     j = requests.get("https://members.hanime.tv/rapi/v7/hentai_videos",
         params = {
             "source": "randomize",
@@ -116,7 +116,7 @@ def get_random(seed):
     results = []
 
     for result in j["hentai_videos"]:
-        results.append(SearchResult(result["slug"], result["name"]))
+        results.append(SearchResult(result["slug"], result["name"], auth_token=auth_token))
 
     return results
 
