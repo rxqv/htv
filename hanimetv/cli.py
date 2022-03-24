@@ -84,6 +84,7 @@ def main():
     parser.add_argument("--url", "-u", help="Show urls of the source video, do not download", action="store_true", default=False)
     parser.add_argument("--metadata", "-m", help="Show metadata of the source video, do not download", action="store_true", default=False)
     parser.add_argument("--verbose", "-v", help="Enable verbose logging for video download", action="store_true", default=False)
+    parser.add_argument("--auth-token", "-A", help="Hanime.tv X-Session-Token to receive 1080p download-urls with a premium account", action="store")
     args = parser.parse_args()
 
     slugs = list(map(parse_hanime_url, args.video))
@@ -105,7 +106,7 @@ def main():
 
         if query == "random":
             seed = int(time.time()*1000)
-            results = get_random(seed)
+            results = get_random(seed, args.auth_token)
             
             print("Random:")
             if args.index and not args.all:
@@ -121,9 +122,9 @@ def main():
             
             exit(0)
         elif query == "new-uploads":
-            num_pages, results = search("", order_by="created_at_unix", ordering="desc")
+            num_pages, results = search("", order_by="created_at_unix", ordering="desc", auth_token=args.auth_token)
         elif query == "new-releases":
-            num_pages, results = search("", order_by="released_at_unix", ordering="desc")
+            num_pages, results = search("", order_by="released_at_unix", ordering="desc", auth_token=args.auth_token)
         else:
             sort_by = args.sort_by
             sort_order = args.sort_order
@@ -146,9 +147,9 @@ def main():
             }
             
             if args.roll_search:
-                num_pages, results = 1, roll_search(query, **search_kwargs)
+                num_pages, results = 1, roll_search(query, **search_kwargs, auth_token=args.auth_token)
             else:
-                num_pages, results = search(query, **search_kwargs)
+                num_pages, results = search(query, **search_kwargs, auth_token=args.auth_token)
         
         if len(results) > 1 and args.index == [] and not args.all:
             print(f'Found more than one match for "{query}"')
