@@ -21,18 +21,22 @@ class SearchResult:
 
 class Video:
     def __init__(self, json_enc):
+        if json_enc.get("errors"):
+            self.errors = "ERROR: " + str(json_enc.get("errors"))
+            return
+
         self.title = json_enc["hentai_video"]["name"]
         self.slug = json_enc["hentai_video"]["slug"]
         self.sources = {}
         metadata = {}
-        
+
         for server in json_enc["videos_manifest"]["servers"]:
             for source in server["streams"]:
                 if source["url"] != "":
                     name = server["name"]
                     res = source["height"]
                     self.sources[f"{name}-{res}"] = source["url"]
-        
+
         metadata["brand"] = json_enc["hentai_video"]["brand"]
         metadata["likes"] = json_enc["hentai_video"]["likes"]
         metadata["dislikes"] = json_enc["hentai_video"]["dislikes"]
