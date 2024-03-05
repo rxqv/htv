@@ -1,4 +1,4 @@
-from .api import search, download, Video, get_random, parse_hanime_url, roll_search
+from api import search, download, Video, get_random, parse_hanime_url, roll_search
 import argparse
 import sys
 import time
@@ -23,15 +23,29 @@ SORT_ORDER_MAP = {
     "descending": "desc"
 }
 
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
 def verbose_download(video, res=1080, verbose=False, folder=False):
-    print(f"Downloading {video.title}...")
     download(video, res, verbose, folder)
 
 def output(video, args, franchise=False):
+    if hasattr(video, 'errors'):
+        print(f"{bcolors.FAIL}{video.errors}{bcolors.ENDC}")
+        return
+
     try:
         if args.franchise and franchise:
             if not args.url:
-                print(f"Downloading {video.metadata.franchise_title} franchise...")
+                print(f"{bcolors.HEADER}Downloading {bcolors.OKBLUE}{video.metadata.franchise_title} {bcolors.HEADER}franchise...{bcolors.ENDC}")
             
             for slug in video.metadata.franchise_videos:
                 fran_vid = Video.from_slug(slug)
@@ -42,14 +56,15 @@ def output(video, args, franchise=False):
             if args.url:
                 sources = video.at_resolution(args.resolution)
 
-                print(f"{video.title}:")
+                print(f"{bcolors.OKBLUE}{video.title}:{bcolors.ENDC}")
                 for i, j in sources.items():
                     server, res = tuple(i.split("-"))
-                    print(f"{server}, {res}p: {j}")
+                    print(f"{bcolors.BOLD}{server}, {res}p: {j}{bcolors.ENDC}")
                 
                 print()
             if args.metadata:
                 tags_str = ", ".join(video.metadata.tags)
+                print(f"{bcolors.OKCYAN}")
                 print(f"URL: https://hanime.tv/videos/hentai/{video.slug}")
                 print(f"Brand: {video.metadata.brand}")
                 print(f"Franchise: {video.metadata.franchise_title}")
@@ -60,6 +75,7 @@ def output(video, args, franchise=False):
                 print(f"Monthly Rank: {video.metadata.monthly_rank}")
                 print(f"Tags: {tags_str}")
                 print(f"Description:\n{video.metadata.description}\n")
+                print(f"{bcolors.ENDC}")
         else:
             verbose_download(video, args.resolution, args.verbose, args.folder)
     except Exception as e:
@@ -107,7 +123,7 @@ def main():
             seed = int(time.time()*1000)
             results = get_random(seed)
             
-            print("Random:")
+            print(f"{bcolors.HEADER}Random:{bcolors.ENDC}")
             if args.index and not args.all:
                 for i in args.index:
                     if i <= len(results):
@@ -117,7 +133,7 @@ def main():
                     if args.all:
                         output(result.video, args, args.franchise)
                     else:
-                        print(f"{result.title}")
+                        print(f"{bcolors.OKBLUE}{result.title}{bcolors.ENDC}")
             
             exit(0)
         elif query == "new-uploads":
@@ -129,10 +145,10 @@ def main():
             sort_order = args.sort_order
             
             if sort_by not in SORT_OPTS_MAP:
-                print(f'Unknown sort method "{args.sort_by}", using sort by title')
+                print(f'{bcolors.WARNING}Unknown sort method "{args.sort_by}", using sort by title{bcolors.ENDC}')
                 sort_by = "title"
             if sort_order not in SORT_ORDER_MAP:
-                print(f'Unknown sort order "{args.sort_order}", using ascending order')
+                print(f'{bcolors.WARNING}Unknown sort order "{args.sort_order}", using ascending order{bcolors.ENDC}')
                 sort_order = "ascending"
             
             search_kwargs = {
@@ -151,21 +167,22 @@ def main():
                 num_pages, results = search(query, **search_kwargs)
         
         if len(results) > 1 and args.index == [] and not args.all:
-            print(f'Found more than one match for "{query}"')
-            print(f"Page {args.page} of {num_pages}")
+            print(f'Found more than one match for {bcolors.OKBLUE}"{query}"{bcolors.ENDC}')
+            print(f"Page {bcolors.OKGREEN}{args.page}{bcolors.ENDC} of {bcolors.OKGREEN}{num_pages}{bcolors.ENDC}")
             for index, result in enumerate(results):
                 print(f"{index + 1}\t{result.title}")
             
             print("\nSpecify results to download with --index/-i, or download all results shown with --all/-a")
         else:
             if len(results) == 0:
-                print(f'No results for "{query}"')
+                print(f'{bcolors.WARNING}No results for "{query}"{bcolors.ENDC}')
             elif args.index and not args.all:
                 for i in args.index:
                     if i <= len(results):
                         output(results[i-1].video, args, args.franchise)
             elif args.all or len(results) == 1:
                 for result in results:
+                    print(f"{bcolors.HEADER}Downloading {bcolors.OKBLUE}{result.title}{bcolors.ENDC}...")
                     output(result.video, args, args.franchise)
 
 if __name__ == "__main__":
